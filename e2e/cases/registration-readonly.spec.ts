@@ -94,4 +94,59 @@ test.describe('UAT Registration read-only smoke checks', () => {
     await expect(page.getByRole('button', { name: 'Register patient', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Cancel', exact: true })).toBeVisible();
   });
+
+  test('TC054 partial | 03_Registration!R32 | gender radios switch before save', async ({ page }) => {
+    test.info().annotations.push({
+      type: 'scope',
+      description: 'Current-form Male/Female radios only; workbook expects a dropdown with Other and saved selection.',
+    });
+    await page.goto(FORM_URL, { waitUntil: 'domcontentloaded' });
+    await expect(page).toHaveURL(FORM_URL);
+    const male = page.locator('#gender-option-male');
+    const female = page.locator('#gender-option-female');
+    await male.waitFor({ state: 'attached' });
+    await female.waitFor({ state: 'attached' });
+    await male.evaluate((element) => (element as HTMLInputElement).click());
+    await expect(male).toBeChecked();
+    await expect(female).not.toBeChecked();
+    await female.evaluate((element) => (element as HTMLInputElement).click());
+    await expect(female).toBeChecked();
+    await expect(male).not.toBeChecked();
+    // No Save/Register click or patient record write.
+  });
+
+  test('TC055 partial | 03_Registration!R33 | address fields are visible before save', async ({ page }) => {
+    test.info().annotations.push({
+      type: 'scope',
+      description: 'Pre-submit field presence only; hierarchical selection and saved-address assertions are not executed.',
+    });
+    await page.goto(FORM_URL, { waitUntil: 'domcontentloaded' });
+    await expect(page).toHaveURL(FORM_URL);
+    for (const selector of ['#countyDistrict', '#stateProvince', '#address4', 'input[name="address.cityVillage"]']) {
+      await expect(page.locator(selector)).toBeVisible();
+    }
+  });
+
+  test('TC062 partial | 03_Registration!R36 | Cancel returns to the previous page without a patient POST', async ({ page }) => {
+    test.info().annotations.push({
+      type: 'scope',
+      description: 'Synthetic unsaved form only; workbook confirmation prompt and persisted-record absence are not established.',
+    });
+    const previousPage = page.url();
+    await page.goto(FORM_URL, { waitUntil: 'domcontentloaded' });
+    await expect(page).toHaveURL(FORM_URL);
+    await page.locator('#givenName').fill('QaAutomation');
+    await page.locator('#familyName').fill('SyntheticCancel');
+    let patientPosts = 0;
+    page.on('request', (request) => {
+      const url = new URL(request.url());
+      if (url.origin === UAT_ORIGIN && request.method() === 'POST' && /patient|registr/i.test(url.pathname)) {
+        patientPosts += 1;
+      }
+    });
+    await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await expect(page).toHaveURL(previousPage);
+    await page.waitForTimeout(1000); // Allow any delayed cancellation request to be observed.
+    expect(patientPosts, 'Cancel should not issue a patient registration POST').toBe(0);
+  });
 });
