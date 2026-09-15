@@ -16,7 +16,8 @@ This is the standalone working directory for the KenyaEMR/TaifaCare performance 
 - `tools/generate-taifacare-test-coverage.py`: repeatable workbook inventory generator.
 - `tools/uat_patient_tracker.py` and `e2e/helpers/uat-patient-tracker.ts`: local-only audit trail for identifiers assigned by UAT to synthetic patients.
 - `e2e/cases/registration-uat.spec.ts`: disabled-by-default, write-gated partial TC059 registration check that records a UAT-assigned identifier; it has not been run against UAT.
-- `e2e/cases/registration-readonly.spec.ts`: three UAT read-only checks for Registration sidebar navigation and pre-submit form controls; see the scoped results in `docs/uat-registration-readonly-audit.md`.
+- `e2e/cases/registration-readonly.spec.ts`: six UAT read-only checks for Registration sidebar navigation and pre-submit form controls; see the scoped results in `docs/uat-registration-readonly-audit.md`.
+- `docs/registration-workflow-readiness.csv` and `docs/registration-workflow-readiness.md`: source-keyed inventory and completion blockers for all 53 workbook Registration rows; the CSV is rebuilt with `npm run registration:matrix`.
 
 The supplied source workbook is kept at `docs/TaifaCare_Complete_Test_Cases_299_20251111.xlsx` and ignored by Git. The unrelated requirements PDF from the previous workspace was not moved here.
 
@@ -102,7 +103,9 @@ KENYAEMR_PERF_ENV_FILE=/home/rajab/.config/kenyaemr/uat-perf.env \
 npm run test:uat-registration-readonly
 ```
 
-The 2026-09-15 run passed all three checks. `03_Registration!R2` is covered as written; `R15` and `R23` are partial because their Save click, full validation messages, and complete field/indicator checks were not exercised. See `docs/uat-registration-readonly-audit.md` and `docs/qa-automation-progress.csv` for the exact scope.
+The latest 2026-09-15 run passed all six checks. `03_Registration!R2` is covered as written; `R15`, `R23`, `R32`, `R33`, and `R36` are scoped pre-submit results, not full workbook passes. See `docs/uat-registration-readonly-audit.md` and `docs/qa-automation-progress.csv` for the exact scope.
+
+Male/Female radio switching (`R32`) passed before Save, but the workbook expects a dropdown including Other and a saved selection. Cancel (`R36`) returned to the prior page without an observed patient POST, but the workbook expects a confirmation prompt not seen in the read-only inspection. The workflow matrix identifies the remaining Registration cases that need authorized synthetic UAT writes, HIE/Client Registry fixtures, or an OTP test channel. Do not use the read-only performance account for those actions.
 
 ## Where the login-background optimization lives
 
