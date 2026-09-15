@@ -8,7 +8,10 @@
     "test:uat-performance": "playwright test --config=playwright.uat.config.ts",
     "test:uat-performance:long": "playwright test --config=playwright.uat-long.config.ts",
     "test:qa-smoke": "playwright test --config=playwright.qa-smoke.config.ts",
-    "test:qa-smoke:list": "playwright test --config=playwright.qa-smoke.config.ts --list"
+    "test:qa-smoke:list": "playwright test --config=playwright.qa-smoke.config.ts --list",
+    "tracker:run-id": "python3 tools/uat_patient_tracker.py new-run-id",
+    "tracker:export": "python3 tools/uat_patient_tracker.py export",
+    "tracker:test": "python3 -m unittest discover -s tests -v"
   },
   "devDependencies": {
     "@playwright/test": "1.50.1"

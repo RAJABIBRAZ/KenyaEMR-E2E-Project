@@ -14,6 +14,7 @@ This is the standalone working directory for the KenyaEMR/TaifaCare performance 
 - `docs/archive/`: preserved full-workbook login results from before password recovery was excluded.
 - `docs/uat-frontend-runtime-performance-audit.csv`, `docs/uat-route-memory-checkpoints.csv`, and `docs/uat-performance-run.md`: authenticated UAT frontend findings and an Excel-ready ten-cycle memory table.
 - `tools/generate-taifacare-test-coverage.py`: repeatable workbook inventory generator.
+- `tools/uat_patient_tracker.py` and `e2e/helpers/uat-patient-tracker.ts`: local-only audit trail for identifiers assigned by UAT to synthetic patients.
 
 The supplied source workbook is kept at `docs/TaifaCare_Complete_Test_Cases_299_20251111.xlsx` and ignored by Git. The unrelated requirements PDF from the previous workspace was not moved here.
 
@@ -66,6 +67,18 @@ python3 tools/generate-taifacare-test-coverage.py docs/TaifaCare_Complete_Test_C
 ```
 
 The generator writes the inventory CSV and combined workbook to `docs/`. Existing edge-case proposals are preserved. For safety and coverage caveats, see `docs/taifacare-test-automation-plan.md`.
+
+## Track UAT-assigned synthetic patient IDs
+
+The tracker records identifiers and optional UUIDs after UAT assigns them; it does not allocate PIDs, create patients, or access the database. The append-only JSONL and Excel-ready CSV export live in ignored `tracker-data/`, so runtime identifiers do not enter Git. Start one run ID for the whole Playwright execution, then call the helper only from authorized synthetic-patient tests:
+
+```bash
+export QA_E2E_RUN_ID=$(npm run -s tracker:run-id)
+npm run tracker:export
+npm run tracker:test
+```
+
+See `docs/uat-patient-tracker.md` for the schema, helper example, parallel-worker scope, and safety rules. No patient-creation tests are enabled by this tracker alone.
 
 ## Where the login-background optimization lives
 
