@@ -4,3 +4,6 @@ Source Key,Workbook TC ID,Spec,Implementation State,Execution State,Result,Notes
 01_Login!R7,TC006,e2e/cases/login-smoke.spec.ts,Implemented,Executed on UAT 2026-09-15,Passed,Blank form remained on login and required-field validation was present
 01_Login!R8,TC007,e2e/cases/login-smoke.spec.ts,Implemented,Executed on UAT 2026-09-15,Passed,Password input stayed type=password after sentinel entry
 EDGE-006,,e2e/performance/qa-performance.spec.ts,Partial implementation,Executed on UAT 2026-09-15 with ten cycles,Failed plateau criterion,DOM nodes and listeners grew every cycle; strict CI budget is optional and needs an agreed tolerance
+03_Registration!R2,TC041,e2e/cases/registration-readonly.spec.ts,Implemented,Executed on UAT 2026-09-15,Passed,Clicked Registration in the home sidebar; landing page showed Client Registry verification
+03_Registration!R15,TC054,e2e/cases/registration-readonly.spec.ts,Partial implementation,Executed on UAT 2026-09-15,Passed (scoped),Empty First and Family Name were HTML-required; Save was not clicked and validation messages were not assessed
+03_Registration!R23,TC041,e2e/cases/registration-readonly.spec.ts,Partial implementation,Executed on UAT 2026-09-15,Passed (scoped),Basic Info Contact Details Demographics and Next of Kin sections plus Register and Cancel were visible; not all fields or required indicators assessed
