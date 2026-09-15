@@ -1,0 +1,16 @@
+{
+  "name": "taifacare-e2e-optimization-project",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test:qa-performance": "playwright test --config=playwright.qa.config.ts",
+    "test:qa-performance:list": "playwright test --config=playwright.qa.config.ts --list",
+    "test:uat-performance": "playwright test --config=playwright.uat.config.ts",
+    "test:uat-performance:long": "playwright test --config=playwright.uat-long.config.ts",
+    "test:qa-smoke": "playwright test --config=playwright.qa-smoke.config.ts",
+    "test:qa-smoke:list": "playwright test --config=playwright.qa-smoke.config.ts --list"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.50.1"
+  }
+}

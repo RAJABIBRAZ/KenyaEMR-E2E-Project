@@ -1,0 +1,11 @@
+node_modules/
+test-results/
+playwright-report/
+.env
+.env.*
+*.log
+docs/TaifaCare_Complete_Test_Cases_299_20251111.xlsx
+
+# Temporary office/spreadsheet lock files
+.~lock.*#
+~$*

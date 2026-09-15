@@ -1,0 +1,6 @@
+Source Key,Workbook TC ID,Spec,Implementation State,Execution State,Result,Notes
+01_Login!R2,TC001,e2e/cases/login-smoke.spec.ts,Partial implementation,Executed on UAT 2026-09-15,Passed (scoped),Password recovery excluded by user request; original workbook TC001 remains broader
+01_Login!R3,TC002,e2e/cases/login-smoke.spec.ts,Implemented,Executed on UAT 2026-09-15,Failed,Document exceeds viewport by 48 px at all three tested sizes; footer images visible
+01_Login!R7,TC006,e2e/cases/login-smoke.spec.ts,Implemented,Executed on UAT 2026-09-15,Passed,Blank form remained on login and required-field validation was present
+01_Login!R8,TC007,e2e/cases/login-smoke.spec.ts,Implemented,Executed on UAT 2026-09-15,Passed,Password input stayed type=password after sentinel entry
+EDGE-006,,e2e/performance/qa-performance.spec.ts,Partial implementation,Executed on UAT 2026-09-15 with ten cycles,Failed plateau criterion,DOM nodes and listeners grew every cycle; strict CI budget is optional and needs an agreed tolerance
