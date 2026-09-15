@@ -16,6 +16,7 @@ export default defineConfig({
     actionTimeout: 15 * 1000,
     navigationTimeout: 30 * 1000,
     ignoreHTTPSErrors: false,
+    serviceWorkers: 'block',
     trace: 'off',
     screenshot: 'off',
     video: 'off',
