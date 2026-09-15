@@ -16,6 +16,7 @@ This is the standalone working directory for the KenyaEMR/TaifaCare performance 
 - `tools/generate-taifacare-test-coverage.py`: repeatable workbook inventory generator.
 - `tools/uat_patient_tracker.py` and `e2e/helpers/uat-patient-tracker.ts`: local-only audit trail for identifiers assigned by UAT to synthetic patients.
 - `e2e/cases/registration-uat.spec.ts`: disabled-by-default, write-gated partial TC059 registration check that records a UAT-assigned identifier; it has not been run against UAT.
+- `e2e/cases/registration-readonly.spec.ts`: three UAT read-only checks for Registration sidebar navigation and pre-submit form controls; see the scoped results in `docs/uat-registration-readonly-audit.md`.
 
 The supplied source workbook is kept at `docs/TaifaCare_Complete_Test_Cases_299_20251111.xlsx` and ignored by Git. The unrelated requirements PDF from the previous workspace was not moved here.
 
@@ -91,6 +92,17 @@ Safe checks that never create a patient:
 npm run test:uat-registration:list
 npm run test:uat-registration:unit
 ```
+
+## Read-only UAT Registration checks
+
+The separate read-only suite uses the existing UAT audit account to navigate from the sidebar to Client Registry and inspect the empty registration form. It never searches a patient or clicks Register/Save. Traces, video, and screenshots are off. Run it with the credential file outside Git:
+
+```bash
+KENYAEMR_PERF_ENV_FILE=/home/rajab/.config/kenyaemr/uat-perf.env \
+npm run test:uat-registration-readonly
+```
+
+The 2026-09-15 run passed all three checks. `03_Registration!R2` is covered as written; `R15` and `R23` are partial because their Save click, full validation messages, and complete field/indicator checks were not exercised. See `docs/uat-registration-readonly-audit.md` and `docs/qa-automation-progress.csv` for the exact scope.
 
 ## Where the login-background optimization lives
 

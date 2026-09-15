@@ -32,7 +32,9 @@ Within the workbook's advertised `TC001`–`TC595` range, 27 numeric TC IDs have
 
 The `Workbook Test Status` field is blank on 579 rows and says `Not Tested` on 34 rows. `Workbook Dev Status` is a separate development field: 21 rows say `Completed`, 490 say `Pending`, and 102 are blank. Development completion is not test execution evidence.
 
-## Current automation coverage
+## Baseline automation mapping at workbook import
+
+This table describes the initial inventory classification, not the latest executable suite. For current implementation, execution, and scoped results, consult `qa-automation-progress.csv` and the UAT run notes. Generated `Not automated` rows below are not automatically promoted when a later spec is added.
 
 | State | Rows | Meaning |
 | --- | ---: | --- |
@@ -62,7 +64,7 @@ The generated inventory intentionally does not copy source steps, descriptions, 
 
 1. Normalize duplicate IDs and replace broad or circular expected results with observable assertions. Agree which 2025 cases still match the 2026 QA application.
 2. Build read-only login/dashboard/navigation and role-aware report smoke tests using dedicated QA accounts and de-identified fixtures. Run these without trace, video, or screenshots unless the dataset is cleared for recording.
-3. Add isolated synthetic patient/visit fixtures and cleanup contracts. Only then implement registration, triage, consultation, orders, dispensing, admission, billing, admin, and Partograph writes.
+3. Add isolated synthetic patient/visit fixtures and cleanup contracts. A disabled write-gated registration spec may be prepared earlier, but only then enable and run registration, triage, consultation, orders, dispensing, admission, billing, admin, and Partograph writes.
 4. Add negative, boundary, retry/idempotency, concurrent-user, offline, and security cases from the edge register. Clinical thresholds, consent, financial rounding, and confidentiality expectations must come from signed-off local policy rather than assumptions in code.
 5. Run the suite in bounded module batches and record `Implemented`, `Executed`, and `Passed/Failed` separately in the coverage matrix. A passing Playwright process should never silently promote unrelated rows to `Passed`.
 
@@ -79,4 +81,4 @@ It needs the local `openpyxl` package. It regenerates the metadata CSV and combi
 
 ## Required decision for write tests
 
-Before implementing or running scenarios that create patients, visits, observations, orders, dispensing transactions, payments, user accounts, or role changes, confirm the QA-only synthetic data convention, test roles, rollback/cleanup process, and which side effects are authorized. The current temporary account was provided for a read-only frontend performance audit and should not be silently reused for all workflow writes.
+Before enabling or running scenarios that create patients, visits, observations, orders, dispensing transactions, payments, user accounts, or role changes, confirm the QA-only synthetic data convention, test roles, rollback/cleanup process, and which side effects are authorized. The current temporary account was provided for a read-only frontend performance audit and should not be silently reused for workflow writes.
