@@ -1,6 +1,9 @@
 node_modules/
 test-results/
 playwright-report/
+tracker-data/
+__pycache__/
+*.pyc
 .env
 .env.*
 *.log
