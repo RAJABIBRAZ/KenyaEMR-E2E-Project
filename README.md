@@ -15,6 +15,7 @@ This is the standalone working directory for the KenyaEMR/TaifaCare performance 
 - `docs/uat-frontend-runtime-performance-audit.csv`, `docs/uat-route-memory-checkpoints.csv`, and `docs/uat-performance-run.md`: authenticated UAT frontend findings and an Excel-ready ten-cycle memory table.
 - `tools/generate-taifacare-test-coverage.py`: repeatable workbook inventory generator.
 - `tools/uat_patient_tracker.py` and `e2e/helpers/uat-patient-tracker.ts`: local-only audit trail for identifiers assigned by UAT to synthetic patients.
+- `e2e/cases/registration-uat.spec.ts`: disabled-by-default, write-gated partial TC059 registration check that records a UAT-assigned identifier; it has not been run against UAT.
 
 The supplied source workbook is kept at `docs/TaifaCare_Complete_Test_Cases_299_20251111.xlsx` and ignored by Git. The unrelated requirements PDF from the previous workspace was not moved here.
 
@@ -78,7 +79,18 @@ npm run tracker:export
 npm run tracker:test
 ```
 
-See `docs/uat-patient-tracker.md` for the schema, helper example, parallel-worker scope, and safety rules. No patient-creation tests are enabled by this tracker alone.
+See `docs/uat-patient-tracker.md` for the schema, helper example, parallel-worker scope, and safety rules. The registration test is separately opt-in and must not be run with the read-only performance-audit account.
+
+## Guarded synthetic UAT registration
+
+The new partial TC059 check connects registration to the local tracker. It is skipped by default; only test discovery, the default skip, and offline parser tests have been verified. It creates one synthetic patient only after separate UAT write authorization, a dedicated write-enabled QA account, and explicit environment flags. No Playwright retries or optional patient identifiers are used. See `docs/uat-patient-tracker.md` for the approval checklist and run command; do not run the write command until that approval is in place.
+
+Safe checks that never create a patient:
+
+```bash
+npm run test:uat-registration:list
+npm run test:uat-registration:unit
+```
 
 ## Where the login-background optimization lives
 

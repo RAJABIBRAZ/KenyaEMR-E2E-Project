@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 
 export type UatPatientEventStatus = 'CREATED' | 'OBSERVED' | 'FAILED';
 
@@ -15,7 +15,9 @@ export type UatPatientEvent = {
   failureCode?: string;
 };
 
-const trackerScript = fileURLToPath(new URL('../../tools/uat_patient_tracker.py', import.meta.url));
+// Playwright runs from the project root; avoiding import.meta keeps this helper
+// compatible with the repository's CommonJS Playwright TypeScript loader.
+const trackerScript = resolve(process.cwd(), 'tools/uat_patient_tracker.py');
 
 /**
  * Record a synthetic patient's identifier only after UAT has assigned it.
