@@ -30,6 +30,7 @@ FIELDS = [
 
 REGISTRY = {3, 4, 5, 6, 7, 12, 19, 31}
 OTP = {8, 9, 10, 11, 13}
+ASSISTED_PRINCIPAL = {3, 4, 6, 8, 9}
 PATIENT_WRITES = {14, 16, 18, 20, 21, 22, 24, 25, 34, 35, 37}
 SAVE_VALIDATIONS = {15, 26, 27, 28, 29}
 
@@ -60,6 +61,8 @@ def dependency(row_number: int) -> str:
         return "Approved synthetic National ID format; no real identity"
     if row_number in REGISTRY:
         return "Approved de-identified HIE/Client Registry fixture and read role"
+    if row_number in {8, 9}:
+        return "Approved synthetic principal and test phone/inbox; unattended CI needs an OTP test channel"
     if row_number in OTP:
         return "Approved OTP sandbox/test channel, synthetic person and consent"
     if row_number == 35:
@@ -87,10 +90,10 @@ def next_action(row_number: int, progress: dict[str, str], duplicate: bool) -> s
     if row_number in {15, 23}:
         return "Extend beyond pre-submit scope before claiming full workbook case"
     if row_number == 20:
-        return "Authorized live synthetic registration and UAT-assigned-ID reconciliation"
-    if row_number == 3:
-        return "Confirm National ID selector and implement read-only selection"
-    if row_number in {4, 5}:
+        return "Keep the scoped UAT result; extend remaining branches without blindly repeating the patient save"
+    if row_number in ASSISTED_PRINCIPAL:
+        return "Run guarded assisted principal test with approved fixture; add OTP test channel for unattended CI"
+    if row_number == 5:
         return "Use approved synthetic/invalid ID fixture; verify validation before any external search"
     if row_number == 32:
         return "Resolve Male/Female/Other product mismatch; execute scoped radio check if authorized"

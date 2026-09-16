@@ -15,7 +15,7 @@ This is the standalone working directory for the KenyaEMR/TaifaCare performance 
 - `docs/uat-frontend-runtime-performance-audit.csv`, `docs/uat-route-memory-checkpoints.csv`, and `docs/uat-performance-run.md`: authenticated UAT frontend findings and an Excel-ready ten-cycle memory table.
 - `tools/generate-taifacare-test-coverage.py`: repeatable workbook inventory generator.
 - `tools/uat_patient_tracker.py` and `e2e/helpers/uat-patient-tracker.ts`: local-only audit trail for identifiers assigned by UAT to synthetic patients.
-- `e2e/cases/registration-uat.spec.ts`: disabled-by-default, write-gated partial TC059 registration check that records a UAT-assigned identifier; it has not been run against UAT.
+- `e2e/cases/registration-uat.spec.ts`: disabled-by-default, write-gated partial TC059 registration check; one authorized UAT run captured an assigned identifier in the ignored local tracker.
 - `e2e/cases/registration-readonly.spec.ts`: six UAT read-only checks for Registration sidebar navigation and pre-submit form controls; see the scoped results in `docs/uat-registration-readonly-audit.md`.
 - `docs/registration-workflow-readiness.csv` and `docs/registration-workflow-readiness.md`: source-keyed inventory and completion blockers for all 53 workbook Registration rows; the CSV is rebuilt with `npm run registration:matrix`.
 
@@ -81,11 +81,11 @@ npm run tracker:export
 npm run tracker:test
 ```
 
-See `docs/uat-patient-tracker.md` for the schema, helper example, parallel-worker scope, and safety rules. The registration test is separately opt-in and must not be run with the read-only performance-audit account.
+See `docs/uat-patient-tracker.md` for the schema, helper example, parallel-worker scope, and safety rules. The registration test is separately opt-in; reusing the audit account for a write requires explicit approval and its dedicated guard flag.
 
 ## Guarded synthetic UAT registration
 
-The new partial TC059 check connects registration to the local tracker. It is skipped by default; only test discovery, the default skip, and offline parser tests have been verified. It creates one synthetic patient only after separate UAT write authorization, a dedicated write-enabled QA account, and explicit environment flags. No Playwright retries or optional patient identifiers are used. See `docs/uat-patient-tracker.md` for the approval checklist and run command; do not run the write command until that approval is in place.
+The partial TC059 check connects registration to the local tracker. It is skipped by default. One separately authorized UAT run on 2026-09-15 saved a synthetic patient and captured UAT's assigned ID; it did not start a visit. Any further run still requires explicit write authorization, a suitable QA account, and opt-in flags. No Playwright retries or optional patient identifiers are used. See `docs/uat-patient-tracker.md` for the approval checklist and run command; do not repeat a save blindly.
 
 Safe checks that never create a patient:
 
@@ -106,6 +106,22 @@ npm run test:uat-registration-readonly
 The latest 2026-09-15 run passed all six checks. `03_Registration!R2` is covered as written; `R15`, `R23`, `R32`, `R33`, and `R36` are scoped pre-submit results, not full workbook passes. See `docs/uat-registration-readonly-audit.md` and `docs/qa-automation-progress.csv` for the exact scope.
 
 Male/Female radio switching (`R32`) passed before Save, but the workbook expects a dropdown including Other and a saved selection. Cancel (`R36`) returned to the prior page without an observed patient POST, but the workbook expects a confirmation prompt not seen in the read-only inspection. The workflow matrix identifies the remaining Registration cases that need authorized synthetic UAT writes, HIE/Client Registry fixtures, or an OTP test channel. Do not use the read-only performance account for those actions.
+
+## Principal-member National ID and OTP (assisted)
+
+`e2e/cases/registration-principal-otp.spec.ts` covers the current UAT Client Registry path through a verified principal member. It selects National ID, looks up one approved synthetic principal, opens the OTP prompt, waits for an operator to enter the code in the headed Chrome window, then asserts that `Check In` and `Show dependents` are available. This is partial coverage of workbook `R3`, `R4`, `R6`, `R8`, and `R9`: it does not assert all HIE details or SMS delivery. It does not click Check In, register dependents, or create a patient or visit. The test is skipped unless `QA_E2E_PRINCIPAL_OTP_APPROVED=true`; retries, screenshots, video, and traces are disabled. A real OTP is never put in source, terminal arguments, or test output.
+
+The 2026-09-16 live attempts reached the ID-search result and then an unidentified modal, but did not complete the assisted test. The automation was adjusted for a UAT focus trap and for a modal that can overlay the background `Enter OTP` action; a safe rerun is pending confirmation of the prior OTP state. Do not report `R9` as passed from these attempts.
+
+Keep the approved **8-digit synthetic principal ID** outside this repository, and use only a test phone/inbox you control. The existing owner-only UAT credential file may contain one additional line: `QA_E2E_PRINCIPAL_NATIONAL_ID=<approved-test-id>`. Alternatively, keep the ID in a separate owner-only text file and set `QA_E2E_PRINCIPAL_ID_FILE` to its absolute path; do not set both. Do not use the example `QATEST000001` value from the QA-data notes or an arbitrary real person's ID. Run only when the test destination is ready to receive an OTP:
+
+```bash
+KENYAEMR_PERF_ENV_FILE=/home/rajab/.config/kenyaemr/uat-perf.env \
+QA_E2E_PRINCIPAL_OTP_APPROVED=true \
+npm run test:uat-principal-otp
+```
+
+For safe discovery without a lookup or OTP, run `npm run test:uat-principal-otp:list`. Fully unattended execution needs an approved UAT OTP test inbox/API or equivalent fixture; the current test deliberately requires a person to enter the code.
 
 ## Where the login-background optimization lives
 
